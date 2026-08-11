@@ -14,6 +14,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const os = require("os");
 const { URL } = require("url");
 
 const ROOT = __dirname;
@@ -407,7 +408,25 @@ const server = http.createServer((req, res) => {
   }
 });
 
+function lanAddresses() {
+  const nets = os.networkInterfaces();
+  const out = [];
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name] || []) {
+      if (net.family === "IPv4" && !net.internal) out.push(net.address);
+    }
+  }
+  return out;
+}
+
 server.listen(PORT, () => {
-  console.log(`MAPS 백엔드 실행 중 — http://localhost:${PORT}/ 로 접속하세요.`);
+  console.log(`MAPS 백엔드 실행 중 — 이 PC에서는 http://localhost:${PORT}/ 로 접속하세요.`);
+  const ips = lanAddresses();
+  if (ips.length) {
+    console.log(`같은 사내망의 다른 사람은 아래 주소로 접속할 수 있습니다 (방화벽에서 포트 ${PORT}를 허용해야 합니다):`);
+    ips.forEach((ip) => console.log(`  http://${ip}:${PORT}/`));
+  } else {
+    console.log(`이 PC의 네트워크 IP를 찾지 못했습니다 — cmd에서 ipconfig 로 IPv4 주소를 확인해 http://<IP>:${PORT}/ 로 안내하세요.`);
+  }
   console.log(`관리자 계정: admin / admin1234 (1차 IT 검토), admin2 / admin1234 (2차 적절성 검토) — 운영 전 비밀번호를 변경하세요.`);
 });
