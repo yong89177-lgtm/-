@@ -3971,7 +3971,6 @@ async function loadApprovals(){
     const r=await fetch("api/dash-requests",{cache:"no-store"});const j=await r.json();
     const tb=document.querySelector("#dashReqTable tbody");tb.innerHTML="";
     if(j.ok&&j.items.length){
-      const isSuper=ME.id==="admin";
       j.items.forEach(q=>{
         const tr=document.createElement("tr");
         const dl=q.file?`<a class="minibtn" href="api/req-file?id=${encodeURIComponent(q.id)}" style="text-decoration:none">⬇ HTML</a>`:'<span class="b-meta">없음</span>';
@@ -3979,17 +3978,13 @@ async function loadApprovals(){
         const td=document.createElement("td");
         const ctrl=document.createElement("div");
         if(q.status==="pending"){
-          if(isSuper){
-            const ok=document.createElement("button");ok.className="minibtn";ok.textContent="1차 승인";ok.onclick=()=>approveReq(q.id,true);
-            const no=document.createElement("button");no.className="minibtn del";no.textContent="1차 반려";no.style.marginLeft="6px";no.onclick=()=>approveReq(q.id,false);
-            ctrl.appendChild(ok);ctrl.appendChild(no);
-          }else ctrl.innerHTML='<span class="reqst reqst-pending">1차 IT 검토 대기</span>';
+          const ok=document.createElement("button");ok.className="minibtn";ok.textContent="1차 승인";ok.onclick=()=>approveReq(q.id,true);
+          const no=document.createElement("button");no.className="minibtn del";no.textContent="1차 반려";no.style.marginLeft="6px";no.onclick=()=>approveReq(q.id,false);
+          ctrl.appendChild(ok);ctrl.appendChild(no);
         }else if(q.status==="it_approved"){
-          if(!isSuper){
-            const ok=document.createElement("button");ok.className="minibtn";ok.textContent="2차 승인";ok.onclick=()=>approveReq(q.id,true);
-            const no=document.createElement("button");no.className="minibtn del";no.textContent="2차 반려";no.style.marginLeft="6px";no.onclick=()=>approveReq(q.id,false);
-            ctrl.appendChild(ok);ctrl.appendChild(no);
-          }else ctrl.innerHTML='<span class="reqst reqst-it_approved">2차 검토 대기(타 관리자)</span>';
+          const ok=document.createElement("button");ok.className="minibtn";ok.textContent="2차 승인";ok.onclick=()=>approveReq(q.id,true);
+          const no=document.createElement("button");no.className="minibtn del";no.textContent="2차 반려";no.style.marginLeft="6px";no.onclick=()=>approveReq(q.id,false);
+          ctrl.appendChild(ok);ctrl.appendChild(no);
         }else{
           ctrl.innerHTML=`<span class="reqst reqst-${q.status}">${reqStatusText(q)}</span>`;
         }

@@ -322,13 +322,10 @@ const server = http.createServer((req, res) => {
         const id = body.id, approve = !!body.approve, reason = String(body.reason || "").trim();
         const q = STORE.requests.find((r) => r.id === id);
         if (!q) return sendJson(res, 404, { ok: false, error: "요청을 찾을 수 없습니다." });
-        const isSuper = s.id === "admin";
         if (q.status === "pending") {
-          if (!isSuper) return sendJson(res, 403, { ok: false, error: "1차 IT 검토 권한이 없습니다." });
           q.stage1 = { by: s.id, ts: tsNow(), decision: approve ? "approved" : "rejected", reason };
           q.status = approve ? "it_approved" : "rejected";
         } else if (q.status === "it_approved") {
-          if (isSuper) return sendJson(res, 403, { ok: false, error: "2차 검토는 다른 관리자 계정으로 진행해야 합니다." });
           q.stage2 = { by: s.id, ts: tsNow(), decision: approve ? "approved" : "rejected", reason };
           q.status = approve ? "approved" : "rejected";
           if (approve) q.approvedAt = Date.now();
