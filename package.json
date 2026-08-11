@@ -1,0 +1,13 @@
+{
+  "name": "maps-agent-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MAPS AI Agent 등록 요청 접수 · 관리자 승인 · 카테고리별 카드 생성을 처리하는 최소 백엔드",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
